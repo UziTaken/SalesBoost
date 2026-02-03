@@ -84,19 +84,22 @@ export default function History() {
         const sessions = response.items || [];
 
         // Transform sessions to history records
-        const transformedRecords: HistoryRecord[] = sessions.map(session => ({
-          id: session.id,
-          dateTime: new Date(session.ended_at || session.started_at).toLocaleString('zh-CN'),
-          courseName: `课程 ${session.course_id}`,
-          customerName: '客户',
-          customerRole: '采购经理',
-          category: session.task_type || '对话',
-          duration: calculateDuration(session.started_at, session.ended_at),
-          score: session.final_score || 0,
-          scoreLevel: session.final_score >= 90 ? 'excellent' :
-                     session.final_score >= 80 ? 'good' :
-                     session.final_score >= 70 ? 'average' : 'poor'
-        }));
+        const transformedRecords: HistoryRecord[] = sessions.map(session => {
+          const score = session.final_score || 0;
+          return {
+            id: session.id,
+            dateTime: new Date(session.ended_at || session.started_at).toLocaleString('zh-CN'),
+            courseName: `课程 ${session.course_id}`,
+            customerName: '客户',
+            customerRole: '采购经理',
+            category: session.task_type || '对话',
+            duration: calculateDuration(session.started_at, session.ended_at || session.started_at),
+            score: score,
+            scoreLevel: score >= 90 ? 'excellent' :
+                       score >= 80 ? 'good' :
+                       score >= 70 ? 'average' : 'poor'
+          };
+        });
 
         setRecords(transformedRecords);
         setStats(calculateStats(sessions));

@@ -2,12 +2,34 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
-import { ArrowUp, ArrowDown, Minus, Users, GraduationCap, Trophy } from "lucide-react";
+import { ArrowUp, ArrowDown, Minus, Users, GraduationCap, Trophy, Sparkles, FileText, Loader2 } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import { llmService } from '@/services/llm.service';
 import { mockTeamAnalysis, mockAnalysisKPI } from '@/services/adminMockData';
 
 export default function AdminAnalysis() {
   const data = mockTeamAnalysis;
   const kpi = mockAnalysisKPI;
+  
+  const [isReportOpen, setIsReportOpen] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [report, setReport] = useState('');
+
+  const generateAIReport = async () => {
+    setIsGenerating(true);
+    setIsReportOpen(true);
+    try {
+      const prompt = `Analyze the following team performance data and provide a concise executive report with insights and recommendations:\n${JSON.stringify(data, null, 2)}`;
+      const result = await llmService.chatCompletion([{ role: 'user', content: prompt }]);
+      setReport(result);
+    } catch (error) {
+      setReport("Failed to generate AI report. Please check your API configuration.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -16,6 +38,10 @@ export default function AdminAnalysis() {
           <h1 className="text-3xl font-bold tracking-tight">Ability Analysis</h1>
           <p className="text-muted-foreground mt-2">Team performance metrics and growth trends.</p>
         </div>
+        <Button onClick={generateAIReport} disabled={isGenerating} className="gap-2">
+          {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+          Generate AI Report
+        </Button>
       </div>
 
       {/* KPI Cards */}

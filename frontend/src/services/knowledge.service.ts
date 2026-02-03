@@ -26,7 +26,25 @@ export interface KnowledgeEntry {
 export interface KnowledgeStats {
   total_documents: number;
   total_chars: number;
+  total_size_bytes: number;
+  vector_count: number;
   recent_uploads: Array<{ date: string; count: number }>;
+  by_source: Record<string, number>;
+  by_stage: Record<string, number>;
+}
+
+export interface KnowledgeListParams {
+  page?: number;
+  page_size?: number;
+  search?: string;
+  source?: string;
+  stage?: string;
+}
+
+export interface UploadProgress {
+  loaded: number;
+  total: number;
+  percentage: number;
 }
 
 const STORAGE_KEY = 'salesboost_knowledge_base';
@@ -45,21 +63,80 @@ class KnowledgeService {
    * Upload text content to the local knowledge base
    */
   async uploadText(
-    title: string,
     content: string,
     metadata: KnowledgeMetadata = {}
-  ): Promise<{ success: boolean; id: string }> {
+  ): Promise<{ success: boolean; id: string; message: string }> {
     const entries = this.getStorage();
+    const title = metadata.title || `Text Upload ${new Date().toLocaleTimeString()}`;
     const newEntry: KnowledgeEntry = {
       id: Date.now().toString(),
       title,
       content,
-      metadata: { ...metadata, source: 'user-upload' },
+      metadata: { ...metadata, source: metadata.source || 'user-upload' },
       created_at: new Date().toISOString(),
     };
     
     this.setStorage([newEntry, ...entries]);
-    return { success: true, id: newEntry.id };
+    return { success: true, id: newEntry.id, message: 'Text uploaded successfully' };
+  }
+
+  /**
+   * List knowledge entries with pagination and filtering
+   */
+  async listKnowledge(params: KnowledgeListParams = {}): Promise<{ items: KnowledgeEntry[]; total: number }> {
+    let entries = this.getStorage();
+    
+    // Filtering
+    if (params.search) {
+      const search = params.search.toLowerCase();
+      entries = entries.filter(e => 
+        e.title.toLowerCase().includes(search) || 
+        e.content.toLowerCase().includes(search)
+      );
+    }
+    
+    if (params.source) {
+      entries = entries.filter(e => e.metadata.source === params.source);
+    }
+    
+    if (params.stage) {
+      entries = entries.filter(e => e.metadata.stage === params.stage);
+    }
+
+    const total = entries.length;
+    const page = params.page || 1;
+    const pageSize = params.page_size || 10;
+    
+    const items = entries.slice((page - 1) * pageSize, page * pageSize);
+    
+    return { items, total };
+  }
+
+  /**
+   * Get knowledge base statistics
+   */
+  async getStats(): Promise<KnowledgeStats> {
+    const entries = this.getStorage();
+    const stats: KnowledgeStats = {
+      total_documents: entries.length,
+      total_chars: entries.reduce((sum, e) => sum + e.content.length, 0),
+      total_size_bytes: entries.reduce((sum, e) => sum + new Blob([e.content]).size, 0),
+      vector_count: entries.length, // Client-side simulation
+      recent_uploads: [],
+      by_source: {},
+      by_stage: {}
+    };
+
+    // Group by source and stage
+    entries.forEach(e => {
+      const source = e.metadata.source || 'unknown';
+      stats.by_source[source] = (stats.by_source[source] || 0) + 1;
+      
+      const stage = e.metadata.stage || 'general';
+      stats.by_stage[stage] = (stats.by_stage[stage] || 0) + 1;
+    });
+
+    return stats;
   }
 
   /**
@@ -76,7 +153,7 @@ class KnowledgeService {
       reader.onload = async (e) => {
         try {
           const content = e.target?.result as string;
-          const result = await this.uploadText(file.name, content, metadata);
+          const result = await this.uploadText(content, { ...metadata, title: file.name });
           if (onProgress) onProgress({ loaded: file.size, total: file.size, percentage: 100 });
           resolve({ ...result, message: 'File uploaded successfully' });
         } catch (error) {

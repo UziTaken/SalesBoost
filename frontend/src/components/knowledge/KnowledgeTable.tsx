@@ -38,7 +38,7 @@ export default function KnowledgeTable({ refreshTrigger }: KnowledgeTableProps) 
     try {
       const response = await knowledgeService.listKnowledge({
         page,
-        limit,
+        page_size: limit,
         search: searchQuery || undefined,
         ...filters,
       });

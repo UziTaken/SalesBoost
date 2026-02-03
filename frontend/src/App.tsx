@@ -2,6 +2,7 @@ import { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/auth.store';
 import ErrorBoundary from '@/components/common/ErrorBoundary';
+import SecurityBanner from '@/components/common/SecurityBanner';
 import { Toaster } from "@/components/ui/toaster"
 
 // Eager load login page (critical path)

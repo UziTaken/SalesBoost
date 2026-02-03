@@ -79,7 +79,7 @@ export default function Training() {
           id: `history-${idx}`,
           role: msg.role,
           content: msg.content,
-          timestamp: Date.now() - (message.history.length - idx) * 1000
+          timestamp: Date.now() - ((message.history?.length || 0) - idx) * 1000
         }));
         setMessages(historyMessages);
       }

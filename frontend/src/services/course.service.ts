@@ -11,6 +11,8 @@ export interface Course {
   title: string;
   description?: string;
   status: 'draft' | 'published' | 'archived';
+  user_status?: 'not_started' | 'in_progress' | 'completed';
+  progress?: number;
   category?: string;
   difficulty: number;
   duration_minutes?: number;

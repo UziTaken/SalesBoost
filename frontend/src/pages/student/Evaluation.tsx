@@ -71,7 +71,7 @@ export default function Evaluation() {
       .map((session, index) => ({
         name: `Session ${index + 1}`,
         score: Math.round(Math.random() * 30 + 70), // TODO: Get actual score from session
-        date: new Date(session.created_at).toLocaleDateString(),
+        date: session.created_at ? new Date(session.created_at).toLocaleDateString() : 'N/A',
       }));
   }, [sessionsData]);
 

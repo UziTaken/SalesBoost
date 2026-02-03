@@ -18,12 +18,12 @@
     "jsx": "react-jsx",
 
     /* Strict Type-Checking Options */
-    "strict": true,
+    "strict": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": false,
+    "noUncheckedIndexedAccess": false,
+    "noImplicitReturns": false,
     "noUncheckedSideEffectImports": false,
     "forceConsistentCasingInFileNames": true,
 

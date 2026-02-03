@@ -88,26 +88,26 @@ export default function CourseList() {
             <CardContent>
               <div className="flex justify-between items-center mb-4">
                 <span className={`text-sm font-medium px-2 py-1 rounded ${
-                  course.status === 'completed'
+                  course.user_status === 'completed'
                     ? 'bg-green-100 text-green-800'
-                    : course.status === 'in_progress'
+                    : course.user_status === 'in_progress'
                     ? 'bg-blue-100 text-blue-800'
                     : 'bg-gray-100 text-gray-800'
                 }`}>
-                  {course.status === 'completed' ? 'Completed' :
-                   course.status === 'in_progress' ? 'In Progress' : 'Not Started'}
+                  {course.user_status === 'completed' ? 'Completed' :
+                   course.user_status === 'in_progress' ? 'In Progress' : 'Not Started'}
                 </span>
-                <span className="text-sm font-medium">{course.progress}%</span>
+                <span className="text-sm font-medium">{course.progress || 0}%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
                 <div
                   className="bg-indigo-600 h-2.5 rounded-full transition-all"
-                  style={{ width: `${course.progress}%` }}
+                  style={{ width: `${course.progress || 0}%` }}
                 ></div>
               </div>
               <Button className="w-full" asChild>
                 <a href={`/student/training/${course.id}`}>
-                  {course.status === 'completed' ? 'Review' : 'Continue'}
+                  {course.user_status === 'completed' ? 'Review' : 'Continue'}
                 </a>
               </Button>
             </CardContent>
