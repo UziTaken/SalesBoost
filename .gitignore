@@ -36,9 +36,8 @@ dist/
 dist-ssr/
 *.local
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
+# Editor directories and files (NEVER commit IDE configs)
+.vscode/
 .idea/
 .DS_Store
 *.suo
@@ -47,8 +46,11 @@ dist-ssr/
 *.sln
 *.sw?
 
-# Claude Code
+# Tool-specific directories (NEVER commit)
 .claude/
+.trae/
+.vercel/
+.cursor/
 
 # Storage (runtime data)
 storage/logs/
