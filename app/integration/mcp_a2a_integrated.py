@@ -24,9 +24,12 @@ from redis.asyncio import Redis
 from app.a2a.message_bus import A2AMessageBus
 from app.a2a.protocol import A2AMessage, MessageType
 from app.mcp.orchestrator import MCPOrchestrator
+from app.mcp.orchestrator_enhanced import MCPOrchestratorEnhanced
 from app.mcp.dynamic_tools import DynamicToolGenerator
 from app.mcp.service_mesh import MCPMesh, RoutingStrategy
 from app.mcp.learning_engine import MCPLearningEngine
+from app.mcp.cache_manager import MCPCacheManager
+from app.mcp.retry_policy import RetryPolicy
 from app.tools.executor import ToolExecutor
 from app.tools.registry import ToolRegistry
 
@@ -212,6 +215,8 @@ class IntegratedSystem:
         self.tool_generator: Optional[DynamicToolGenerator] = None
         self.service_mesh: Optional[MCPMesh] = None
         self.learning_engine: Optional[MCPLearningEngine] = None
+        self.cache_manager: Optional[MCPCacheManager] = None
+        self.retry_policy: Optional[RetryPolicy] = None
 
         # Agents
         self.agents: Dict[str, Any] = {}
@@ -219,6 +224,10 @@ class IntegratedSystem:
     async def initialize(self):
         """初始化系统"""
         logger.info("Initializing Integrated MCP-A2A System...")
+
+        # 0. Initialize LLM client if not provided
+        if not self.llm_client:
+            self.llm_client = self._create_mock_llm()
 
         # 1. Initialize Redis
         self.redis_client = Redis.from_url(self.redis_url, decode_responses=True)
@@ -236,33 +245,47 @@ class IntegratedSystem:
         self.tool_executor = ToolExecutor(registry=self.tool_registry)
         logger.info("✓ Tool System initialized")
 
-        # 4. Initialize MCP Orchestrator
-        if not self.llm_client:
-            # Use mock LLM for demo
-            self.llm_client = self._create_mock_llm()
-
-        self.orchestrator = MCPOrchestrator(
-            tool_registry=self.tool_registry,
-            tool_executor=self.tool_executor,
-            llm_client=self.llm_client,
-        )
-        logger.info("✓ MCP Orchestrator initialized")
-
-        # 5. Initialize Dynamic Tool Generator
-        self.tool_generator = DynamicToolGenerator()
-        logger.info("✓ Dynamic Tool Generator initialized")
-
-        # 6. Initialize Service Mesh
-        self.service_mesh = MCPMesh()
-        await self.service_mesh.start()
-        logger.info("✓ MCP Service Mesh initialized")
-
-        # 7. Initialize Learning Engine
+        # 4. Initialize Learning Engine
         self.learning_engine = MCPLearningEngine(
             learning_rate=0.1,
             min_samples_for_learning=10,
         )
         logger.info("✓ MCP Learning Engine initialized")
+
+        # 5. Initialize Cache Manager
+        self.cache_manager = MCPCacheManager(
+            redis_client=self.redis_client,
+            default_ttl=3600,
+        )
+        logger.info("✓ MCP Cache Manager initialized")
+
+        # 6. Initialize Retry Policy
+        self.retry_policy = RetryPolicy(
+            max_retries=3,
+            base_delay=1.0,
+            max_delay=30.0,
+        )
+        logger.info("✓ MCP Retry Policy initialized")
+
+        # 7. Initialize Enhanced MCP Orchestrator
+        self.orchestrator = MCPOrchestratorEnhanced(
+            tool_registry=self.tool_registry,
+            tool_executor=self.tool_executor,
+            llm_client=self.llm_client,
+            learning_engine=self.learning_engine,
+            cache_manager=self.cache_manager,
+            retry_policy=self.retry_policy,
+        )
+        logger.info("✓ MCP Orchestrator Enhanced initialized")
+
+        # 8. Initialize Dynamic Tool Generator
+        self.tool_generator = DynamicToolGenerator()
+        logger.info("✓ Dynamic Tool Generator initialized")
+
+        # 9. Initialize Service Mesh
+        self.service_mesh = MCPMesh()
+        await self.service_mesh.start()
+        logger.info("✓ MCP Service Mesh initialized")
 
         logger.info("✓ System initialization complete")
 
@@ -369,12 +392,16 @@ class IntegratedSystem:
         mesh_status = self.service_mesh.get_mesh_status()
         orchestrator_stats = self.orchestrator.get_performance_stats()
         learning_report = self.learning_engine.get_performance_report() if self.learning_engine else {}
+        cache_stats = self.cache_manager.get_stats() if self.cache_manager else {}
+        retry_stats = self.retry_policy.get_stats() if self.retry_policy else {}
 
         return {
             "a2a": a2a_stats,
             "mesh": mesh_status,
             "orchestrator": orchestrator_stats,
             "learning": learning_report,
+            "cache": cache_stats,
+            "retry": retry_stats,
             "agents": {
                 agent_id: {
                     "type": type(agent).__name__,
@@ -386,6 +413,10 @@ class IntegratedSystem:
     async def shutdown(self):
         """关闭系统"""
         logger.info("Shutting down Integrated System...")
+
+        # Shutdown orchestrator (flush learning queue)
+        if self.orchestrator and hasattr(self.orchestrator, "shutdown"):
+            await self.orchestrator.shutdown()
 
         # Shutdown service mesh
         if self.service_mesh:
