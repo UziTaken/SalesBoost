@@ -4,6 +4,7 @@ import logging
 from typing import List, Dict, Optional, Any
 from app.infra.gateway.schemas import ModelConfig
 from app.infra.llm.interfaces import LLMAdapter
+from app.infra.llm.anthropic_adapter import AnthropicAdapter
 from openai import AsyncOpenAI
 
 logger = logging.getLogger(__name__)
@@ -187,10 +188,21 @@ class AdapterFactory:
             base_url = os.getenv("SILICONFLOW_BASE_URL", "https://api.siliconflow.cn/v1")
             cls._adapters[provider] = OpenAIAdapter(api_key, base_url, provider_name="siliconflow")
         elif provider == "google":
-            api_key = os.getenv("GOOGLE_API_KEY", "dummy-key")
+            api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+            if not api_key:
+                raise ValueError(
+                    "GOOGLE_API_KEY or GEMINI_API_KEY environment variable is required for google provider. "
+                    "Get your API key from: https://makersuite.google.com/app/apikey"
+                )
             cls._adapters[provider] = GeminiAdapter(api_key)
         elif provider == "anthropic":
-            # Mock for now
-            cls._adapters[provider] = GeminiAdapter("dummy") 
+            api_key = os.getenv("ANTHROPIC_API_KEY")
+            if not api_key:
+                raise ValueError(
+                    "ANTHROPIC_API_KEY environment variable is required for anthropic provider. "
+                    "Get your API key from: https://console.anthropic.com/"
+                )
+            # Use real Anthropic adapter
+            cls._adapters[provider] = AnthropicAdapter(api_key) 
             
         return cls._adapters.get(provider)

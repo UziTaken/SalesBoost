@@ -1,64 +1,12 @@
 import { useEffect, useState } from 'react';
-import { taskService, Task as APITask } from '@/services/task.service';
-import { sessionService } from '@/services/session.service';
 import { useAuthStore } from '@/store/auth.store';
 import { useToast } from '@/hooks/use-toast';
 import { Task, Statistics } from '@/types/dashboard';
 import { StatCard } from '@/components/dashboard/StatCard';
 import { TaskTable } from '@/components/dashboard/TaskTable';
 import { FilterBar } from '@/components/dashboard/FilterBar';
-import { Layers, PlayCircle, CheckCircle, Award, Lock } from 'lucide-react';
-
-/**
- * Calculate statistics from session data
- *
- * @param sessions - Array of training sessions
- * @returns Statistics object
- */
-const calculateStatistics = (sessions: any[]): Statistics => {
-  const totalTasks = sessions.length;
-  const inProgress = sessions.filter(s => s.status === 'active').length;
-  const completed = sessions.filter(s => s.status === 'completed').length;
-
-  const scores = sessions
-    .filter(s => s.final_score !== null && s.final_score !== undefined)
-    .map(s => s.final_score);
-
-  const averageScore = scores.length > 0
-    ? Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length)
-    : 0;
-
-  return {
-    totalTasks,
-    inProgress,
-    completed,
-    averageScore,
-    lockedItems: 0
-  };
-};
-
-/**
- * Transform API task to dashboard task format
- */
-const transformTask = (apiTask: APITask): Task => {
-  return {
-    id: apiTask.id.toString(),
-    courseName: `Task ${apiTask.id}`,
-    courseSubtitle: apiTask.description || '',
-    taskInfo: apiTask.title,
-    taskTag: apiTask.task_type,
-    status: apiTask.status as any,
-    timeRange: {
-      start: apiTask.created_at,
-      end: apiTask.updated_at
-    },
-    progress: {
-      completed: apiTask.completion_rate || 0,
-      total: 100,
-      bestScore: apiTask.average_score || 0
-    }
-  };
-};
+import { Layers, PlayCircle, CheckCircle, Award, Lock, Trophy } from 'lucide-react';
+import { getTasks, getStatistics } from '@/services/taskService';
 
 export default function StudentDashboard() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -71,36 +19,22 @@ export default function StudentDashboard() {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!user) {
-        setLoading(false);
-        return;
-      }
-
       setLoading(true);
       try {
-        // Fetch tasks and sessions in parallel
-        const [tasksResponse, sessionsResponse] = await Promise.all([
-          taskService.listTasks({ page: 1, page_size: 100 }),
-          sessionService.listSessions({
-            user_id: user.id,
-            page: 1,
-            page_size: 1000
-          }).catch(() => ({ items: [], total: 0, page: 1, page_size: 1000 }))
+        // Fetch real data from backend API
+        const [tasksData, statsData] = await Promise.all([
+          getTasks(),
+          getStatistics()
         ]);
 
-        // Transform tasks to dashboard format
-        const transformedTasks = tasksResponse.items.map(transformTask);
-        setTasks(transformedTasks);
-
-        // Calculate statistics from sessions
-        const calculatedStats = calculateStatistics(sessionsResponse.items || []);
-        setStats(calculatedStats);
+        setTasks(tasksData);
+        setStats(statsData);
       } catch (error) {
         console.error("Failed to fetch dashboard data", error);
         toast({
           variant: "destructive",
           title: "加载失败",
-          description: "无法加载仪表盘数据，请刷新页面重试。"
+          description: "无法连接到后端服务器。请确保后端正在运行 (python main.py)。"
         });
       } finally {
         setLoading(false);
@@ -165,17 +99,6 @@ export default function StudentDashboard() {
             iconColor="text-yellow-500"
             iconBgColor="bg-yellow-100"
           />
-          <div className="hidden lg:block">
-            <StatCard 
-               title="锁定"
-               value={stats.lockedItems || 0}
-               subtitle="待解锁"
-               icon={Lock}
-               iconColor="text-gray-400"
-               iconBgColor="bg-gray-100"
-               className="h-full flex items-center justify-center"
-            />
-          </div>
         </div>
       )}
 

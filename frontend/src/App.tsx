@@ -103,6 +103,7 @@ export default function App() {
               <Route path="users" element={<AdminUsers />} />
               <Route path="courses" element={<AdminCourses />} />
               <Route path="tasks" element={<AdminTasks />} />
+              <Route path="analysis" element={<AdminAnalysis />} />
               <Route path="knowledge" element={<KnowledgeBase />} />
               <Route path="evolution" element={<EvolutionTrends />} />
               <Route path="settings" element={<AdminSettings />} />

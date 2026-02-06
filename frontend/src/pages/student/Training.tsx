@@ -9,6 +9,7 @@ import { sessionService, Session } from '@/services/session.service';
 import { useLocation, useParams } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
 import { useWebSocket } from '@/hooks/useWebSocket';
+import { env } from '@/config/env';
 
 interface Message {
   id: string;
@@ -38,14 +39,16 @@ export default function Training() {
   const [isCreatingSession, setIsCreatingSession] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
 
-  // WebSocket connection
+  // WebSocket connection - use environment variable or fallback to current host
+  const wsUrl = env.VITE_WS_URL || `ws://${window.location.host}/ws/chat`;
+  
   const {
     isConnected,
     isConnecting,
     sendMessage,
     lastMessage
   } = useWebSocket({
-    url: 'ws://localhost:8000/ws/chat',
+    url: wsUrl,
     queryParams: {
       token: localStorage.getItem('access_token') || '',
       session_id: (session as any)?.session_id || session?.id || ''

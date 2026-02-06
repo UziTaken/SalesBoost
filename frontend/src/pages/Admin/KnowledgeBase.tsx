@@ -1,175 +1,217 @@
-/**
- * Knowledge Base Management Page
- *
- * Main page for managing the knowledge base.
- * Integrates:
- * - KnowledgeUploader for adding new content
- * - KnowledgeTable for viewing and managing entries
- * - KnowledgeStats for analytics and insights
- */
-
 import { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import KnowledgeUploader from '@/components/knowledge/KnowledgeUploader';
-import KnowledgeTable from '@/components/knowledge/KnowledgeTable';
-import KnowledgeStats from '@/components/knowledge/KnowledgeStats';
-import { Database, Upload, BarChart3, Bot, Send, Loader2 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { llmService, ChatMessage } from '@/services/llm.service';
+import { 
+  Search, 
+  Plus, 
+  MoreVertical, 
+  Eye, 
+  FileText,
+  Globe,
+  Users,
+  Lock,
+  ArrowUp,
+  Database
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
-export default function KnowledgeBase() {
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [activeTab, setActiveTab] = useState('browse');
-  
-  // Test Tab State
-  const [testContext, setTestContext] = useState('SalesBoost is a leading AI-powered sales training platform. It helps sales teams improve their skills through realistic role-play scenarios. The platform features an AI Coach that provides real-time feedback.');
-  const [testQuestion, setTestQuestion] = useState('');
-  const [testAnswer, setTestAnswer] = useState('');
-  const [isTesting, setIsTesting] = useState(false);
+// Mock Data based on Image 5
+const KNOWLEDGE_BASES = [
+  {
+    id: 1,
+    name: "信用卡产品知识库",
+    count: 156,
+    creator: "产品经理",
+    description: "包含所有信用卡产品的详细说明、权益介绍、使用...",
+    permission: "全公司",
+    permissionColor: "bg-green-50 text-green-700 border-green-200",
+    permissionIcon: Globe,
+    updated_at: "2024-12-18"
+  },
+  {
+    id: 2,
+    name: "销售标准话术库",
+    count: 89,
+    creator: "培训主管",
+    description: "销售话术模板、标准销售流程、常见场景应对话术",
+    permission: "全公司",
+    permissionColor: "bg-green-50 text-green-700 border-green-200",
+    permissionIcon: Globe,
+    updated_at: "2024-12-17"
+  },
+  {
+    id: 3,
+    name: "合规规范手册",
+    count: 45,
+    creator: "合规主管",
+    description: "销售合规要求、禁用话术、风险提示规范等",
+    permission: "成员可见",
+    permissionColor: "bg-blue-50 text-blue-700 border-blue-200",
+    permissionIcon: Users,
+    updated_at: "2024-12-16"
+  },
+  {
+    id: 4,
+    name: "客户异议处理案例",
+    count: 67,
+    creator: "培训主管",
+    description: "真实客户异议处理案例集、最佳实践分享",
+    permission: "全公司",
+    permissionColor: "bg-green-50 text-green-700 border-green-200",
+    permissionIcon: Globe,
+    updated_at: "2024-12-15"
+  },
+  {
+    id: 5,
+    name: "高端客户服务指南",
+    count: 34,
+    creator: "客户经理",
+    description: "针对高净值客户的服务标准、沟通技巧、产品推荐...",
+    permission: "成员可见",
+    permissionColor: "bg-blue-50 text-blue-700 border-blue-200",
+    permissionIcon: Users,
+    updated_at: "2024-12-14"
+  }
+];
 
-  const handleUploadSuccess = () => {
-    // Trigger refresh of table and stats
-    setRefreshTrigger(prev => prev + 1);
-    // Switch to browse tab to see the uploaded content
-    setActiveTab('browse');
-  };
+const STATS = [
+  {
+    label: "总知识库数",
+    value: "5",
+    subtext: "活跃使用中",
+    trend: null
+  },
+  {
+    label: "总知识条目",
+    value: "391",
+    subtext: "较上月 +23",
+    trend: "up",
+    trendColor: "text-green-600"
+  },
+  {
+    label: "平均查询次数",
+    value: "1,234",
+    subtext: "本周",
+    trend: null
+  },
+  {
+    label: "知识准确率",
+    value: "96%",
+    subtext: "↑ +2%",
+    trend: "up",
+    trendColor: "text-green-600"
+  }
+];
 
-  const handleTestQA = async () => {
-    if (!testQuestion.trim() || !testContext.trim()) return;
-    
-    setIsTesting(true);
-    try {
-      const systemPrompt = llmService.createKnowledgeBasePrompt(testContext);
-      const messages: ChatMessage[] = [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: `Context: ${testContext}\n\nQuestion: ${testQuestion}` }
-      ];
-
-      const response = await llmService.chatCompletion(messages);
-      setTestAnswer(response);
-    } catch (error) {
-      console.error("QA Error:", error);
-      setTestAnswer("Error: Could not retrieve answer from AI.");
-    } finally {
-      setIsTesting(false);
-    }
-  };
+export default function AdminKnowledgeBase() {
+  const [searchTerm, setSearchTerm] = useState("");
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col h-full space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Knowledge Base</h1>
-          <p className="text-gray-600 mt-1">
-            Manage your sales knowledge, documents, and training materials
-          </p>
-        </div>
-        <div className="flex items-center gap-2 text-sm text-gray-500">
-          <Database className="w-5 h-5" />
-          <span>Vector Database: Qdrant</span>
-        </div>
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">知识管理</h1>
+        <p className="text-sm text-gray-500 mt-1">管理知识库和资料</p>
       </div>
 
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
-          <TabsTrigger value="browse" className="flex items-center gap-2">
-            <Database className="w-4 h-4" />
-            <span className="hidden sm:inline">Browse</span>
-          </TabsTrigger>
-          <TabsTrigger value="upload" className="flex items-center gap-2">
-            <Upload className="w-4 h-4" />
-            <span className="hidden sm:inline">Upload</span>
-          </TabsTrigger>
-          <TabsTrigger value="analytics" className="flex items-center gap-2">
-            <BarChart3 className="w-4 h-4" />
-            <span className="hidden sm:inline">Analytics</span>
-          </TabsTrigger>
-          <TabsTrigger value="test" className="flex items-center gap-2">
-            <Bot className="w-4 h-4" />
-            <span className="hidden sm:inline">Test AI</span>
-          </TabsTrigger>
-        </TabsList>
+      {/* Top Bar */}
+      <div className="flex items-center justify-between bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+        <div className="relative w-96">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input 
+            placeholder="搜索知识库..." 
+            className="pl-9 bg-gray-50 border-transparent focus:bg-white transition-colors"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        
+        <Button className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-md rounded-lg">
+          <Plus className="w-4 h-4 mr-2" />
+          新建知识库
+        </Button>
+      </div>
 
-        {/* Browse Tab */}
-        <TabsContent value="browse" className="mt-6">
-          <KnowledgeTable refreshTrigger={refreshTrigger} />
-        </TabsContent>
-
-        {/* Upload Tab */}
-        <TabsContent value="upload" className="mt-6">
-          <div className="max-w-3xl mx-auto">
-            <KnowledgeUploader onUploadSuccess={handleUploadSuccess} />
-          </div>
-        </TabsContent>
-
-        {/* Analytics Tab */}
-        <TabsContent value="analytics" className="mt-6">
-          <KnowledgeStats refreshTrigger={refreshTrigger} />
-        </TabsContent>
-
-        {/* Test AI Tab */}
-        <TabsContent value="test" className="mt-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Knowledge Context</CardTitle>
-                <CardDescription>Paste text here to simulate a document retrieval.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Textarea 
-                  value={testContext}
-                  onChange={(e) => setTestContext(e.target.value)}
-                  className="min-h-[300px] font-mono text-sm"
-                  placeholder="Paste your knowledge text here..."
-                />
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Ask Question</CardTitle>
-                <CardDescription>Test how the AI answers based on the context.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex gap-2">
-                  <Input 
-                    value={testQuestion}
-                    onChange={(e) => setTestQuestion(e.target.value)}
-                    placeholder="Ask a question..."
-                    onKeyDown={(e) => e.key === 'Enter' && handleTestQA()}
-                  />
-                  <Button onClick={handleTestQA} disabled={isTesting || !testQuestion.trim()}>
-                    {isTesting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                  </Button>
-                </div>
-                
-                <div className="mt-6">
-                  <h4 className="text-sm font-medium text-gray-500 mb-2">AI Answer:</h4>
-                  <div className="bg-gray-50 rounded-lg p-4 min-h-[150px] text-sm leading-relaxed border border-gray-100">
-                    {testAnswer || <span className="text-gray-400 italic">Answer will appear here...</span>}
+      {/* Knowledge Table */}
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex-1">
+        <Table>
+          <TableHeader className="bg-gray-50/50">
+            <TableRow className="hover:bg-transparent">
+              <TableHead className="w-[300px] text-gray-500 font-medium">名称</TableHead>
+              <TableHead className="text-gray-500 font-medium">创建人</TableHead>
+              <TableHead className="w-[400px] text-gray-500 font-medium">简介</TableHead>
+              <TableHead className="text-gray-500 font-medium">权限范围</TableHead>
+              <TableHead className="text-gray-500 font-medium">最近更新</TableHead>
+              <TableHead className="text-right text-gray-500 font-medium">操作</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {KNOWLEDGE_BASES.map((kb) => (
+              <TableRow key={kb.id} className="hover:bg-gray-50/50 border-gray-100">
+                <TableCell className="py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500">
+                      <FileText className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-gray-900">{kb.name}</div>
+                      <div className="text-xs text-gray-400 mt-0.5">{kb.count} 条记录</div>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
+                </TableCell>
+                <TableCell className="text-gray-600 py-4">{kb.creator}</TableCell>
+                <TableCell className="text-gray-500 text-sm py-4 line-clamp-1">{kb.description}</TableCell>
+                <TableCell className="py-4">
+                  <Badge variant="outline" className={`font-normal rounded-full px-2.5 py-0.5 gap-1.5 ${kb.permissionColor}`}>
+                    <kb.permissionIcon className="w-3 h-3" />
+                    {kb.permission}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-gray-500 text-sm py-4">{kb.updated_at}</TableCell>
+                <TableCell className="text-right py-4">
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" size="sm" className="h-8 text-xs border-gray-200 text-gray-600 hover:text-gray-900">
+                      重命名
+                    </Button>
+                    <Button variant="outline" size="sm" className="h-8 text-xs border-gray-200 text-gray-600 hover:text-gray-900">
+                      权限
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-600">
+                      <MoreVertical className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
 
-      {/* Help Section */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h3 className="text-sm font-semibold text-blue-900 mb-2">💡 Knowledge Base Tips</h3>
-        <ul className="text-sm text-blue-800 space-y-1">
-          <li>• Upload documents in TXT, MD, PDF, DOC, or DOCX format (max 10MB)</li>
-          <li>• Use descriptive sources to organize your knowledge (e.g., "product-docs", "sales-playbook")</li>
-          <li>• Assign appropriate sales stages to help the AI provide context-aware coaching</li>
-          <li>• The system uses BGE-Reranker for high-quality semantic search</li>
-          <li>• All content is automatically vectorized and indexed for fast retrieval</li>
-        </ul>
+      {/* Bottom Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {STATS.map((stat, idx) => (
+          <Card key={idx} className="border-none shadow-sm">
+            <CardContent className="p-6">
+              <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">{stat.label}</p>
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-bold text-gray-900">{stat.value}</span>
+              </div>
+              <div className={`text-xs mt-2 font-medium flex items-center gap-1 ${stat.trendColor || 'text-gray-400'}`}>
+                {stat.trend === 'up' && <ArrowUp className="w-3 h-3" />}
+                {stat.subtext}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </div>
   );

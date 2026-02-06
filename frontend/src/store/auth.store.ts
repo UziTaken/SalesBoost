@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseMock } from '@/lib/supabase';
 
 interface AuthState {
   user: User | null;
@@ -27,11 +27,11 @@ export const useAuthStore = create<AuthState>((set) => ({
       aud: 'authenticated',
       created_at: new Date().toISOString(),
     } as User;
-    
-    set({ 
-      user: mockUser, 
-      isAuthenticated: true, 
-      isLoading: false 
+
+    set({
+      user: mockUser,
+      isAuthenticated: true,
+      isLoading: false
     });
     localStorage.setItem('salesboost-mock-auth', 'true');
   },
@@ -48,32 +48,38 @@ export const useAuthStore = create<AuthState>((set) => ({
           aud: 'authenticated',
           created_at: new Date().toISOString(),
         } as User;
-        
-        set({ 
-          user: mockUser, 
-          isAuthenticated: true, 
-          isLoading: false 
+
+        set({
+          user: mockUser,
+          isAuthenticated: true,
+          isLoading: false
         });
+        return;
+      }
+
+      // Skip Supabase auth in mock mode
+      if (isSupabaseMock) {
+        set({ isLoading: false });
         return;
       }
 
       // Get initial session
       const { data: { session } } = await supabase.auth.getSession();
-      
-      set({ 
-        session, 
+
+      set({
+        session,
         user: session?.user ?? null,
         isAuthenticated: !!session,
-        isLoading: false 
+        isLoading: false
       });
 
       // Listen for auth changes
       supabase.auth.onAuthStateChange((_event, session) => {
-        set({ 
-          session, 
+        set({
+          session,
           user: session?.user ?? null,
           isAuthenticated: !!session,
-          isLoading: false 
+          isLoading: false
         });
       });
     } catch (error) {
@@ -85,7 +91,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   signOut: async () => {
     try {
       localStorage.removeItem('salesboost-mock-auth');
-      await supabase.auth.signOut();
+      if (!isSupabaseMock) {
+        await supabase.auth.signOut();
+      }
       set({ session: null, user: null, isAuthenticated: false });
     } catch (error) {
       console.error('Sign out error:', error);

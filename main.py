@@ -469,6 +469,20 @@ def _register_api_routes(app: FastAPI) -> None:
     # Task Management
     _safe_include("api.endpoints.tasks", "/api/v1/tasks", tags=["tasks"])
 
+    # ==================== New Frontend Support APIs ====================
+
+    # Onboarding API
+    _safe_include("app.api.routes.onboarding", "", tags=["onboarding"])
+
+    # User Preferences API
+    _safe_include("app.api.routes.user_preferences", "", tags=["preferences"])
+
+    # Team Management API
+    _safe_include("app.api.routes.team", "", tags=["team"])
+
+    # Customer Management API
+    _safe_include("api.endpoints.customers", "/api/v1", tags=["customers"])
+
     logger.info("All routers registered successfully")
 
 

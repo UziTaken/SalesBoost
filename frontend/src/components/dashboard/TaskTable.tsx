@@ -9,14 +9,17 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
-import { Play, Edit2, Trash2, MessageSquare } from 'lucide-react';
+import { Play, MoreHorizontal, ScanLine } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 interface TaskTableProps {
   tasks: Task[];
 }
 
 export function TaskTable({ tasks }: TaskTableProps) {
+  const navigate = useNavigate();
+
   const getStatusColor = (status: Task['status']) => {
     switch (status) {
       case 'in-progress':
@@ -107,18 +110,19 @@ export function TaskTable({ tasks }: TaskTableProps) {
                 </div>
               </TableCell>
               <TableCell className="text-right">
-                <div className="flex items-center justify-end gap-2">
-                  <Button size="sm" className="bg-primary hover:bg-primary/90 text-white gap-1 rounded-full px-4">
-                    <Play className="w-3 h-3" /> 去练习
+                <div className="flex items-center justify-end gap-3">
+                  <Button 
+                    size="sm" 
+                    className="bg-purple-600 hover:bg-purple-700 text-white gap-1 rounded-full px-4 shadow-sm shadow-purple-200"
+                    onClick={() => navigate(`/student/training/${task.id}`)}
+                  >
+                    <Play className="w-3 h-3 fill-current" /> 去练习
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-600">
-                    <Edit2 className="w-4 h-4" />
+                  <Button variant="outline" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-600 rounded-lg border-gray-200">
+                    <ScanLine className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-600">
-                    <MessageSquare className="w-4 h-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-red-600">
-                    <Trash2 className="w-4 h-4" />
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-600 rounded-lg">
+                    <MoreHorizontal className="w-4 h-4" />
                   </Button>
                 </div>
               </TableCell>

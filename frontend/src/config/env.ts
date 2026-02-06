@@ -6,9 +6,9 @@ import { z } from 'zod';
  * Fails fast on application startup if configuration is invalid
  */
 const envSchema = z.object({
-  // Supabase Configuration (REQUIRED)
-  VITE_SUPABASE_URL: z.string().url('VITE_SUPABASE_URL must be a valid URL'),
-  VITE_SUPABASE_ANON_KEY: z.string().min(1, 'VITE_SUPABASE_ANON_KEY is required'),
+  // Supabase Configuration (OPTIONAL for demo mode)
+  VITE_SUPABASE_URL: z.string().url('VITE_SUPABASE_URL must be a valid URL').optional().default('https://mock.supabase.co'),
+  VITE_SUPABASE_ANON_KEY: z.string().min(1, 'VITE_SUPABASE_ANON_KEY is required').optional().default('mock_key'),
 
   // API Configuration (OPTIONAL - defaults provided)
   VITE_API_URL: z.string().url().optional().default('http://localhost:8000/api/v1'),

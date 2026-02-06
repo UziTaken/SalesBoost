@@ -12,75 +12,75 @@ export const mockStatistics: Statistics = {
 export const mockCustomers: CustomerPersona[] = [
   {
     id: '1',
-    name: '外先生',
+    name: '刁元仁',
     age: 27,
-    job: '互联网产品经理',
-    traits: ['常跑健身房'],
-    description: '27岁 · 互联网产品经理 · 常跑健身房',
-    creator: '微聊',
-    rehearsalCount: 9,
-    lastRehearsalTime: '12:29',
-    avatarColor: 'from-blue-400 to-indigo-500'
+    job: '电商/货品采购',
+    traits: ['已婚/怀孕1胎预产前'],
+    description: '27岁 · 已婚/怀孕1胎预产前 · 电商/货品采购',
+    creator: '张刚',
+    rehearsalCount: 0,
+    lastRehearsalTime: '今天 17:29',
+    avatarColor: 'from-blue-200 to-blue-400'
   },
   {
     id: '2',
-    name: '三女士',
+    name: '上女士',
     age: 35,
-    job: '企业法务',
-    traits: ['偏冷静务实风格'],
-    description: '35岁 · 企业法务 · 偏冷静务实风格',
-    creator: '王静',
-    rehearsalCount: 9,
-    lastRehearsalTime: '21:16',
-    avatarColor: 'from-purple-400 to-pink-500'
+    job: '金融/理财',
+    traits: ['有车', '公益爱好者'],
+    description: '35岁 · 金融/理财 · 有车 · 公益爱好者',
+    creator: '上芳',
+    rehearsalCount: 0,
+    lastRehearsalTime: '今天 15:20',
+    avatarColor: 'from-purple-200 to-purple-400'
   },
   {
     id: '3',
-    name: '李Q',
+    name: '于宅',
     age: 47,
-    job: '企业法务',
-    traits: ['注重流程与合规'],
-    description: '47岁 · 企业法务 · 注重流程与合规',
-    creator: '王静',
-    rehearsalCount: 9,
-    lastRehearsalTime: '15:16',
-    avatarColor: 'from-green-400 to-teal-500'
+    job: '企业管理',
+    traits: ['经常在直播平台购物'],
+    description: '47岁 · 企业管理 · 经常在直播平台购物',
+    creator: '士芳',
+    rehearsalCount: 0,
+    lastRehearsalTime: '昨天 23:16',
+    avatarColor: 'from-pink-200 to-pink-400'
   },
   {
     id: '4',
-    name: '骆小昭',
+    name: '张小姐',
     age: 29,
     job: '设计师',
-    traits: ['生活方式品味控'],
-    description: '29岁 · 设计师 · 生活方式品味控',
-    creator: '王静',
-    rehearsalCount: 8,
-    lastRehearsalTime: '10:01',
-    avatarColor: 'from-orange-400 to-red-500'
+    traits: ['注重生活品质和物欲'],
+    description: '29岁 · 设计师 · 注重生活品质和物欲',
+    creator: '王邦',
+    rehearsalCount: 0,
+    lastRehearsalTime: '12月15日 10:31',
+    avatarColor: 'from-orange-200 to-orange-400'
   },
   {
     id: '5',
-    name: '虫宜琪',
-    age: 45,
-    job: '销售总监',
-    traits: ['快速决策偏好'],
-    description: '45岁 · 销售总监 · 快速决策偏好',
-    creator: '王静',
+    name: '樊理想',
+    age: 28,
+    job: '新媒体运营',
+    traits: ['经常熬夜', '追求效率'],
+    description: '28岁 · 新媒体运营 · 经常熬夜 · 追求效率',
+    creator: '李鹏',
     rehearsalCount: 0,
-    lastRehearsalTime: '12月15日 10:31',
-    avatarColor: 'from-indigo-400 to-purple-600'
+    lastRehearsalTime: '12月14日 15:36',
+    avatarColor: 'from-teal-200 to-teal-400'
   },
   {
     id: '6',
-    name: '用女士',
+    name: '周女士',
     age: 45,
-    job: '财务',
-    traits: ['注重数字与数据统计'],
-    description: '45岁 · 财务 · 注重数字与数据统计',
-    creator: '为雅',
+    job: '保险行业',
+    traits: ['注重子女教育和家庭理财'],
+    description: '45岁 · 保险行业 · 注重子女教育和家庭理财',
+    creator: '沈鹏',
     rehearsalCount: 0,
     lastRehearsalTime: '12月14日 15:36',
-    avatarColor: 'from-pink-400 to-rose-500'
+    avatarColor: 'from-indigo-200 to-indigo-400'
   }
 ];
 
@@ -95,56 +95,45 @@ export const mockHistoryRecords: HistoryRecord[] = [
   {
     id: '1',
     dateTime: '2024-12-21 14:30',
-    courseName: '新客户开发培训',
-    customerName: '外先生',
-    customerRole: '27岁 · 互联网产品经理',
-    category: '新客户开发',
-    duration: '1时53分29秒',
+    courseName: '新客户开干上场专项训练',
+    customerName: '刘小牛',
+    customerRole: '27岁 · 电商采购',
+    category: '新客户开干',
+    duration: '15分32秒',
     score: 85,
     scoreLevel: 'good'
   },
   {
     id: '2',
     dateTime: '2024-12-20 10:15',
-    courseName: '异议处理训练',
+    courseName: '异议处理专项',
     customerName: '王女士',
-    customerRole: '35岁 · 企业法务',
+    customerRole: '35岁 · 金融/理财',
     category: '异议处理',
-    duration: '1时29分0秒',
+    duration: '18分20秒',
     score: 78,
     scoreLevel: 'average'
   },
   {
     id: '3',
     dateTime: '2024-12-19 16:45',
-    courseName: '需求挖掘训练',
-    customerName: '李Q',
-    customerRole: '47岁 · 企业法务',
-    category: '需求挖掘',
-    duration: '1时29分08秒',
+    courseName: '权益海报专项',
+    customerName: '赵某',
+    customerRole: '42岁 · 企业高管',
+    category: '权益海报',
+    duration: '12分08秒',
     score: 92,
     scoreLevel: 'excellent'
   },
   {
     id: '4',
-    dateTime: '2024-12-18 14:30',
-    courseName: '合同签署训练',
-    customerName: '骆小昭',
-    customerRole: '29岁 · 设计师',
+    dateTime: '2024-12-18 09:30',
+    courseName: '合同签署专项',
+    customerName: '陈女士',
+    customerRole: '30岁 · 法务',
     category: '合同签署',
-    duration: '1时41分58秒',
+    duration: '14分15秒',
     score: 82,
-    scoreLevel: 'good'
-  },
-  {
-    id: '5',
-    dateTime: '2024-12-17 15:30',
-    courseName: '新客户开发训练',
-    customerName: '用女士',
-    customerRole: '45岁 · 财务',
-    category: '新客户开发',
-    duration: '1时69分40秒',
-    score: 80,
     scoreLevel: 'good'
   }
 ];
@@ -171,9 +160,9 @@ export const getHistory = async (): Promise<{ stats: HistoryStats; records: Hist
 export const mockTasks: Task[] = [
   {
     id: '1',
-    courseName: '新客户开卡邀约话术',
-    courseSubtitle: '刘先生（27岁，互联网行业）',
-    taskInfo: '第一季新人培训计划',
+    courseName: '斯睿客户上场专项训练',
+    courseSubtitle: '2/17 片段 | 课程打点',
+    taskInfo: '第一季客户训练计划',
     taskTag: '新人培训',
     status: 'in-progress',
     timeRange: {
@@ -189,13 +178,13 @@ export const mockTasks: Task[] = [
   {
     id: '2',
     courseName: '异议处理训练',
-    courseSubtitle: '王女士（35岁，金融行业）',
-    taskInfo: '销售技能提升专项',
+    courseSubtitle: '35分钟 | 多主题 | 重点练习',
+    taskInfo: '销售策略专项复盘',
     taskTag: '技能提升',
     status: 'pending',
     timeRange: {
       start: '2024-12-10',
-      end: '2024-12-25'
+      end: '2024-12-15'
     },
     progress: {
       completed: 0,
@@ -204,9 +193,9 @@ export const mockTasks: Task[] = [
   },
   {
     id: '3',
-    courseName: '权益推荐场景',
-    courseSubtitle: '李总（42岁，企业高管）',
-    taskInfo: '高端客户服务训练',
+    courseName: '权益海报场景',
+    courseSubtitle: '42分钟 | 多场景',
+    taskInfo: '客诉客户实战训练',
     taskTag: '高端客户',
     status: 'completed',
     timeRange: {
@@ -221,9 +210,9 @@ export const mockTasks: Task[] = [
   },
   {
     id: '4',
-    courseName: '合规话术训练',
-    courseSubtitle: '张小姐（29岁，设计师）',
-    taskInfo: '合规规范强化',
+    courseName: '合同签署训练',
+    courseSubtitle: '38分钟 | 重点练习',
+    taskInfo: '合同洽谈和签约流程',
     taskTag: '合规',
     status: 'in-progress',
     timeRange: {
@@ -238,13 +227,13 @@ export const mockTasks: Task[] = [
   },
   {
     id: '5',
-    courseName: '白金卡销售话术',
-    courseSubtitle: '赵先生（38岁，企业主）',
-    taskInfo: '产品专项训练',
+    courseName: '客户需求挖掘',
+    courseSubtitle: '26分钟 | 引导技巧',
+    taskInfo: '高效问询与倾听',
     taskTag: '产品知识',
     status: 'in-progress',
     timeRange: {
-      start: '2024-12-08',
+      start: '2024-12-10',
       end: '2024-12-22'
     },
     progress: {
